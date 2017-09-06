@@ -1,8 +1,8 @@
 /*  A path integral algorithm for simulating general quantum circuits
-    
+
     Note: In a binary representation, qubits 0 through n-1 are represented from leftmost
     digit to rightmost digit (i.e. 6 = 110 = 0th qubit:1, 1st qubit:1, 2nd qubit:0)
- 
+
     QuantumLab
     Created by Andrew Shi on 7/8/17.
     Copyright © 2017 Andrew Shi. All rights reserved.
@@ -52,7 +52,7 @@ string randToff(int *indices, int n){ //generates a random toffoli gate for n qu
         cout << "not enough qubits\n";
         return "fail";
     }
-    
+
     int i = 0, temp;
     string result = "0 t";
     bool success;
@@ -73,14 +73,14 @@ string randToff(int *indices, int n){ //generates a random toffoli gate for n qu
 
 void algorithmOne(ifstream &in, int n, int startState, bool verbose){
     int spaceSize = (int)pow(2,n);
-    
+
     for (int i = 0; i < spaceSize; i++){ //initialize amps array
         amps[i] = 0;
     }
     amps[startState] = 1; //amplitude of the starting state is one
     in.clear();
     in.seekg(0, ios::beg); //go to beginning of file
-    
+
     char gate;
     int c1, c2, target;
     in >> gate;
@@ -92,7 +92,7 @@ void algorithmOne(ifstream &in, int n, int startState, bool verbose){
                 in >> target;
                 double zero, one;
                 int Hplus = pow(2, n - target), H = Hplus/2, zeroI, oneI;
-                
+
                 //iterate over state vectors where target qubit == 0, updating both vectors (where the target = 0 and = 1) together
                 for (int i = 0; i < spaceSize; i += Hplus){
                     for (int j = 0; j < H; j++){
@@ -117,7 +117,7 @@ void algorithmOne(ifstream &in, int n, int startState, bool verbose){
                     c1 = c2;
                     c2 = temp;
                 }
-                
+
                 /* Iterate over state vectors where both control qubits are 1. The previous approach looped over all states, but this one saves time by factor of 4 by only iterating over those where toffoli actually does something. */
                 int inci = pow(2, n - c1), incj = pow(2, n - c2), C1 = inci/2, C2 = incj/2;
                 for (int i = 0; i < spaceSize; i += inci){ //increments qubits before c1
@@ -151,7 +151,7 @@ void algorithmOne(ifstream &in, int n, int startState, bool verbose){
     cout << "Finished computation on " << n << " qubits\n";
     cout << "<" << binString(startState, n) << "|Circuit|" << binString(startState, n)
     << "> = " << amps[startState] << "\n";
-    
+
     //Print time/memory usage
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
@@ -163,7 +163,7 @@ void algorithmOne(ifstream &in, int n, int startState, bool verbose){
 
 /* writeCircuit: returns a random circuit for n qubits as a string (in Hadamard + toffoli).
  If superRandom = true: all gates will be random (1/2 chance for either toffoli or hadamard), circuit will have (length) gates.
- If superRandom = false, a row of hadamards (one for each qubit) will start and end the circuit, with (length) toffoli gates in between. 
+ If superRandom = false, a row of hadamards (one for each qubit) will start and end the circuit, with (length) toffoli gates in between.
  All toffoli gates are randomly generated. */
 string writeCircuit(int length, int n, bool superRandom){
     string out = "";
@@ -214,10 +214,10 @@ int bitDiff(int a, int b){
  Takes time T*2^h and space O(h) + O(n) [T = total # of gates, h = # of hadamards]
  UPDATE: takes less time now due to recursive restructuring (~2^h)
  Verbose will print the resulting state for *every* hadamard string (and the amplitude).
- 
+
  V1: first version
- V2: changed to DFS procedure 
- V3: added out-of-reach path pruning 
+ V2: changed to DFS procedure
+ V3: added out-of-reach path pruning
  V4: added QFT: controlled-U gates, complex numbers, phase accumulation */
 
 double pathStep(ifstream &in, streampos pos, int n, int startState, int currState, double currPhase, int endState, int changesLeft){
@@ -226,7 +226,7 @@ double pathStep(ifstream &in, streampos pos, int n, int startState, int currStat
     in.clear();
     in.seekg(pos); //move to correct position
     in >> control >> gate;
-    
+
     streampos endPos;
     while (!in.eof()){
         switch (gate){
@@ -241,7 +241,7 @@ double pathStep(ifstream &in, streampos pos, int n, int startState, int currStat
                 if (((branchOne >> (n - target - 1)) & 1) == 1) oneFactor = -1;
                 branchZero = branchZero & ~(1 << (n - target - 1));
                 branchOne = branchOne | (1 << (n - target - 1));
-                
+
                 if (bitDiff(qubits, endState) <= (changeCounter + 1)){
                     return 1/sqrt(2) * pathStep(in, endPos, n, startState, branchZero, currPhase, endState, changeCounter) + oneFactor/sqrt(2) * pathStep(in, endPos, n, startState, branchOne, currPhase, endState, changeCounter);
                 } else return 0;
@@ -272,7 +272,7 @@ complex<double> complexPathStep(ifstream &in, streampos pos, int n, int startSta
     in.clear();
     in.seekg(pos); //move to correct position
     in >> control >> gate;
-    
+
     streampos endPos;
     while (!in.eof()){
         switch (gate){
@@ -287,7 +287,7 @@ complex<double> complexPathStep(ifstream &in, streampos pos, int n, int startSta
                 if (((branchOne >> (n - target - 1)) & 1) == 1) oneFactor = -1;
                 branchZero = branchZero & ~(1 << (n - target - 1));
                 branchOne = branchOne | (1 << (n - target - 1));
-                
+
                 if (bitDiff(qubits, endState) <= (changeCounter + 1)){
                     return 1/sqrt(2) * complexPathStep(in, endPos, n, startState, branchZero, currPhase, endState, changeCounter) + oneFactor/sqrt(2) * complexPathStep(in, endPos, n, startState, branchOne, currPhase, endState, changeCounter);
                 } else return 0;
@@ -336,7 +336,7 @@ void pathIntegral(ifstream &in, int n, int startState, int endState, int numChan
         if (verbose) cout << "<" << binString(endState, n) << "|Circuit|" << binString(startState, n) << "> = " << amplitude << "\n";
         else cout << amplitude;
     }
-    
+
     if (printMem){ //Print time/memory usage
         cout.precision(7);
         struct rusage usage;
@@ -353,13 +353,13 @@ void pathIntegral(ifstream &in, int n, int startState, int endState, int numChan
 //-------------------------------------CONTROL PANEL---------------------------------------
 
 int main(int argc, const char * argv[]){
-    ifstream in ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+    ifstream in ("gates.txt");
     srand((int)time(0)); //set rng seed
     int setting = 0, n = 3; //control panel setting and number of qubits
     /*0 = execute circuit
      1 = write QFT
      2 = write random circuit */
-    
+
 //    string Uset[] = {"t 0 1 2\nh 0\nh 1\nh 2\nt 0 1 2\nh 0\nh 1\nh 2\n","h 2\n","h 2\nt 1 2 0\nh 2\n","h 2\nt 0 2 1\nh 2\n","t 1 2 0\n","h 2\nt 1 2 0\nh 2\n","t 0 2 1\n"};
     int x;
     int woo = 0;
@@ -372,7 +372,7 @@ int main(int argc, const char * argv[]){
         x = i * i;
     }
     cout << "done1\n";
-    
+
     switch (setting){
         case 0: //read and execute circuit from gates.txt
         {
@@ -394,7 +394,7 @@ int main(int argc, const char * argv[]){
         }
         case 1: //write Quantum Fourier Transform on n qubits
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out ("gates.txt");
             string circuit = writeQFT(n);
             out << circuit;
             out.close();
@@ -402,7 +402,7 @@ int main(int argc, const char * argv[]){
         }
         case 2: //write circuit into gates.txt
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out ("gates.txt");
             int length = (int)pow(n,2);
             string circuit = writeCircuit(length, n, false);
             out << circuit;

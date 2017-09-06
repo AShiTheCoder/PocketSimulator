@@ -551,7 +551,7 @@ void algorithmThree(ifstream &in, int n, int startState, int endState, bool verb
 //-------------------------------------CONTROL PANEL---------------------------------------
 
 int main(int argc, const char * argv[]){
-    ifstream in ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+    ifstream in ("gates.txt");
     srand((int)time(0)); //set rng seed
     int setting = 0;
     /*0 = execute circuit
@@ -579,7 +579,7 @@ int main(int argc, const char * argv[]){
         }
         case 1: //write circuit into gates.txt
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out ("gates.txt");
             string circuit = writeCircuit(length, n, false);
             out << circuit;
             out.close();
@@ -587,7 +587,7 @@ int main(int argc, const char * argv[]){
         }
         case 2:
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out ("gates.txt");
             int maxCircuit = 25;
             for (int i = 3; i <= maxCircuit; i++){
                 string circuit = writeCircuit(length, i, false);
@@ -596,14 +596,14 @@ int main(int argc, const char * argv[]){
 //                r = rand() % (int)pow(2,i);
                 algorithmOne(in, i, r, false);
 //                algorithmTwo(in, i, r, false);
-                if (i != maxCircuit) out.open("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt", ofstream::out | ofstream::trunc);
+                if (i != maxCircuit) out.open("gates.txt", ofstream::out | ofstream::trunc);
             }
             break;
         }
         case 3:
         {
             //write a circuit of [length] number of U-gates, from the set defined above
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out ("gates.txt");
             for (int i = 0; i < length; i++){
                 out << Uset[rand() % 7];
             }
