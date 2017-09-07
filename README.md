@@ -5,13 +5,18 @@ Many existing quantum computation simulators operate on the state-vector represe
 ## Getting Started
 PocketSimulator is contained entirely in PathIntegral.cpp; experimental implementations of other simulation methods are located in LabTests.cpp. Any compiler or environment capable of c++ program execution is suitable for running PocketSimulator.
 ## Running Circuits
-PocketSimulator takes three main arguments for custom simulation:
+### Parameters
+PocketSimulator takes several arguments for custom simulation:
 - **n**: # of qubits
 - **length**: # of "changing" gates in the circuit (all gates excluding those which purely add a relative phase)
 - **gates.txt**: text file encoding the computation to be simulated
+- **startState**
+- **endState**
 
-n and length can be modified in the main() method of PathIntegral.cpp; gates.txt can be edited directly to input a desired algorithm or sequence.
-
+gates.txt can be edited directly to input a desired algorithm (sequence of quantum gates), while the remaining parameters are inputted directly into the main() method of PathIntegral.cpp.
+### Execution
+Upon execution of algorithm U, PocketSimulator will return a probability amplitude <startState|U|endState>, as well as memory and time usage details of the execution as returned by the system method `getrusage()` ([documentation here](http://pubs.opengroup.org/onlinepubs/009695399/functions/getrusage.html)).
+### Gates
 Currently, the following gates are/will be supported in PocketSimulator:
 
 Gate | Abbreviation | Arguments | Example
@@ -25,3 +30,4 @@ U (2^n phase) | U | ???? | ????
 (\*) General Phase | R | numerator denominator target (R n d \_) | R 3 7 0 [phase of e^(i\*pi\*6/7)]
 
 (\*) coming soon
+
