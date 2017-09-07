@@ -22,5 +22,6 @@ U (2^n phase) | U | ???? | ????
 (\*) Pauli X | x | target qubit (x \_) | x 0
 (\*) Pauli Y | y | target qubit (y \_) | y 0
 (\*) Pauli Z | z | target qubit (z \_) | z 0
+(\*) General Phase | R | numerator denominator target (R n d \_) | R 3 7 0 [phase of e^(i\*pi\*6/7)]
 
-final commit test: identity working?
+(\*) coming soon
