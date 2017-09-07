@@ -1,18 +1,18 @@
 # PocketSimulator
-PocketSimulator is a space-efficient simulator for arbitrary quantum circuits. Many existing quantum computation simulators operate on the state-vector representation of quantum states, using time and space exponential to the # of qubits involved. In contrast, PocketSimulator adapts a path-integral-esque approach to simulation by iterating over different computation paths successively, achieving *linear* space usage in the # of qubits + the # of gates.
+A space-efficient simulator for arbitrary quantum circuits
 ## About
-Shi has [shown](https://arxiv.org/abs/quant-ph/0205115) that Hadamard and Toffoli gates together are sufficient for universal quantum computation (ie. any quantum computation can be computed with a circuit composed of only of Hadamard/Toffoli gates).
-Because Toffoli gates are universal for classical computation and therefore...
+Many existing quantum computation simulators operate on the state-vector representation of quantum states, using time and space exponential to the # of qubits involved. In contrast, PocketSimulator approaches simulation with an algorithm reminiscent of Feynman's path integral formulation of quantum mechanics. It successively iterates over every computation path, achieving *linear* space usage in the # of qubits + the # of gates.
 ## Getting Started
 PocketSimulator is contained entirely in PathIntegral.cpp; experimental implementations of other simulation methods are located in LabTests.cpp. Any compiler or environment capable of c++ program execution is suitable for running PocketSimulator.
 ## Running Circuits
 PocketSimulator takes three main arguments for custom simulation:
 - **n**: # of qubits
-- **length**: # of "splitting" gates in the circuit
+- **length**: # of "changing" gates in the circuit (all gates excluding those which purely add a relative phase)
 - **gates.txt**: text file encoding the computation to be simulated
+
 n and length can be modified in the main() method of PathIntegral.cpp; gates.txt can be edited directly to input a desired algorithm or sequence.
 
-Currently, the following gates are supported in PocketSimulator:
+Currently, the following gates are/will be supported in PocketSimulator:
 
 Gate | Abbreviation | Arguments | Example
 ---|---|---|---
