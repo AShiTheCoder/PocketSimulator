@@ -23,4 +23,4 @@ U (2^n phase) | U | ???? | ????
 (\*) Pauli Y | y | target qubit (y \_) | y 0
 (\*) Pauli Z | z | target qubit (z \_) | z 0
 
-this commit made by CompetitionEntrant
+this commit made by CompetitionEntrant try #2
