@@ -12,7 +12,7 @@ PocketSimulator takes several arguments for custom simulation:
 - **gates.txt**: text file encoding the computation to be simulated
 - **startState** and **endState**
 
-gates.txt can be edited directly to input a desired algorithm (sequence of quantum gates), while the remaining parameters are inputted directly into the main() method of PathIntegral.cpp.
+gates.txt can be edited directly to input a desired algorithm (sequence of quantum gates), while the remaining parameters are inputted directly into the main() method of PathIntegral.cpp. DID THE PROJECT MOVE WORK???
 ### Execution
 Upon execution of algorithm U, PocketSimulator will return a probability amplitude <endState|U|startState>, as well as memory and time usage details of the execution as returned by the system method `getrusage()` ([documentation here](http://pubs.opengroup.org/onlinepubs/009695399/functions/getrusage.html)).
 ### Gates
