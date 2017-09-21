@@ -37,7 +37,7 @@ double amps[INT_MAX]; //used for amplitude storage
  MODIFIED VERBOSE: TRUE = PRINT ALL END AMPLITUDES, FALSE = ONLY PRINTS "DONE"
  (because of very large state spaces yielding massive console outputs, verbose was adjusted from the previous definition.) */
 
-void stateVector(string gatePath, int N, int startState, int endState, bool verbose){
+void stateVector(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
     cout << "Comparison algorithm: [stateVector]\nSimulation in progress........\n\n\n";
     ifstream in = ifstream(gatePath);
     int spaceSize = (int)pow(2,N);
@@ -120,12 +120,14 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
     cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N)
     << ">(vector) = " << amps[endState] << "\n";
     
-    //Print time/memory usage
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    long totaluTime = (usage.ru_stime.tv_sec + usage.ru_utime.tv_sec) * 1000000 + usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
-    double totalTime = totaluTime/ (double) 1000000;
-    cout << "Runtime: " << totalTime << " seconds\n";
-    //    cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
-    //Memory usage details removed due to unclear units
+    if (showRuntime){ //Print time usage
+        cout.precision(7);
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        long totaluTime = (usage.ru_stime.tv_sec + usage.ru_utime.tv_sec) * 1000000 + usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
+        double totalTime = totaluTime/ (double) 1000000;
+        cout << "Runtime: " << totalTime << " seconds\n";
+        //        cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
+        //Memory usage details removed due to unclear units
+    }
 }

@@ -25,10 +25,10 @@ long memConst = 1024 * 1024; //constant for interpreting rusage's memory output
 
 //----------------------------------CONTROL PANEL--------------------------------------
 //Input simulation parameters
-int N = 22;
+int N = 20;
 int startState = 0, endState = 0;
-bool printMem = true; //controls whether runtime details are printed on console
-string gatePath = "/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt"; //Directory path to gate file
+bool showRuntime = true; //controls whether runtime details are printed on console
+string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
 ifstream in = ifstream(gatePath);
 
 //SIMULATION SETTING VARIABLES
@@ -62,16 +62,16 @@ int main(int argc, const char * argv[]){
         case 0: //Execute user-inputted circuit from gates.txt
         {
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates, cmplx, printMem); break;
-                case 1: stateVector(gatePath, N, startState, endState, false); break;
-                case 2: savitch(gatePath, N, startState, endState, false); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates, cmplx, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
             break;
         }
         case 1: //Write and execute layered circuit
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out (gatePath);
             
             /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of [length] toffoli gates, for a total of [length] + 2n gates. */
             bool layered = true;
@@ -81,9 +81,9 @@ int main(int argc, const char * argv[]){
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, false, printMem); break;
-                case 1: stateVector(gatePath, N, startState, endState, false); break;
-                case 2: savitch(gatePath, N, startState, endState, false); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, false, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
             
@@ -91,7 +91,7 @@ int main(int argc, const char * argv[]){
         }
         case 2: //Write and execute dispersed circuit
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out (gatePath);
             
             /* The circuit consists of n Hadamard gates (one on each bit) dispersed uniformly throughout [length] toffoli gates, for a total of [length] + n gates. */
             bool layered = false;
@@ -101,16 +101,16 @@ int main(int argc, const char * argv[]){
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, false, printMem); break;
-                case 1: stateVector(gatePath, N, startState, endState, false); break;
-                case 2: savitch(gatePath, N, startState, endState, false); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + N, false, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
             break;
         }
         case 3: //Write and execute draper adder
         {
-            ofstream out ("/Users/AShi/Documents/Repos/QuantumLab/QuantumLab/gates.txt");
+            ofstream out (gatePath);
             string circuit = writeAdder(N);
             out << circuit;
             out.close();
@@ -119,9 +119,9 @@ int main(int argc, const char * argv[]){
             startState = a*pow(2, N/2) + b, endState = startState - b + sum;
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, N, false, printMem); break;
-                case 1: stateVector(gatePath, N, startState, endState, false); break;
-                case 2: savitch(gatePath, N, startState, endState, false); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, N, false, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
             
@@ -130,7 +130,7 @@ int main(int argc, const char * argv[]){
         }
         default: break;
     }
-    if (printMem){
+    if (showRuntime){
         cout << "Press enter once memory/time data has been collected.\n";
         string *line = new string();
         getline(cin, *line);

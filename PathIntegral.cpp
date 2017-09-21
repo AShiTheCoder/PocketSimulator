@@ -175,7 +175,7 @@ void complexPathStep(streampos pos, int changesLeft, complex<double> currPhase, 
     } else cmplxAmps[currDepth] = 0;
 }
 
-void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, bool cmplx, bool printMem){
+void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, bool cmplx, bool showRuntime){
     cout << "Main Method: [PocketSimulator]\nSimulation in progress........\n\n\n";
     currState = startS, startState = startS, endState = endS;
     N = n;
@@ -190,7 +190,7 @@ void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, 
         cout << "<" << binString(endS, N) << "|Circuit|" << binString(startS, N) << "> = " << amplitudes[0] << "\n";
     }
     
-    if (printMem){ //Print time usage
+    if (showRuntime){ //Print time usage
         cout.precision(7);
         struct rusage usage;
         getrusage(RUSAGE_SELF, &usage);

@@ -104,7 +104,7 @@ double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *laye
     return result;
 }
 
-void savitch(string gatePath, int N, int startState, int endState, bool verbose){
+void savitch(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
     cout << "Comparison algorithm: [Aaronson's Savitch]\nSimulation in progress........\n\n\n";
     char gate;
     int c1, c2, target, depth = 0, gCount = 0, ctrl;
@@ -165,12 +165,14 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose)
     double result = savitchRecur(N, 0, depth - 1, startState, endState, layers, verbose); //call recursive algorithm
     cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << ">: " << result << "\n";
     
-    //Print time/memory usage
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    long totaluTime = (usage.ru_stime.tv_sec + usage.ru_utime.tv_sec) * 1000000 + usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
-    double totalTime = totaluTime/ (double) 1000000;
-    cout << "Runtime: " << totalTime << " seconds\n";
-    //    cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
-    //Memory usage details removed due to unclear units
+    if (showRuntime){ //Print time usage
+        cout.precision(7);
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        long totaluTime = (usage.ru_stime.tv_sec + usage.ru_utime.tv_sec) * 1000000 + usage.ru_stime.tv_usec + usage.ru_utime.tv_usec;
+        double totalTime = totaluTime/ (double) 1000000;
+        cout << "Runtime: " << totalTime << " seconds\n";
+        //        cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
+        //Memory usage details removed due to unclear units
+    }
 }
