@@ -123,7 +123,7 @@ void complexPathStep(streampos pos, int changesLeft, complex<double> currPhase, 
 }
 
 void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, bool showRuntime){
-    cout << "Main Method: [PocketSimulator]\nSimulation in progress........\n";
+    cout << "Main Method: [PocketSimulator]\n" << n << " qubit simulation in progress........\n";
     currState = startS, startState = startS, endState = endS;
     N = n;
     in = ifstream(gatePath);

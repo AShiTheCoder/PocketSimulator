@@ -132,7 +132,7 @@ complex<double> savitchRecur(int N, int beginD, int endD, int startS, int endS, 
 }
 
 void savitch(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
-    cout << "Comparison algorithm: [Aaronson's Savitch]\nSimulation in progress........\n";
+    cout << "Comparison algorithm: [Aaronson's Savitch]\n" << N << " qubit simulation in progress........\n";
     char gate;
     int c1, c2, target, depth = 0, gCount = 0, ctrl, c;
     string gateBuffer = "";

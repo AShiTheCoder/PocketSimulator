@@ -48,7 +48,7 @@ string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/g
 ifstream in = ifstream(gatePath);
 
 int circuitSetting = 1; //Circuit setting control
-int algorithmSetting = 2; //Algorithm setting control
+int algorithmSetting = 0; //Algorithm setting control
 
 //VARIABLE FOR SETTING 0 ONLY: user-inputted circuit
 int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE GATES
@@ -81,7 +81,7 @@ int main(int argc, const char * argv[]){
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, showRuntime); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, 3*N, showRuntime); break;
                 case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
@@ -99,8 +99,8 @@ int main(int argc, const char * argv[]){
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, showRuntime); break;
-                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime);
+                case 0: pathIntegral(gatePath, N, startState, endState, 3*N, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }

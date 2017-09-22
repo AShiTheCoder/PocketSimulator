@@ -38,7 +38,7 @@ complex<double> amps[INT_MAX/2048]; //used for amplitude storage
  (because of very large state spaces yielding massive console outputs, verbose was adjusted from the previous definition.) */
 
 void stateVector(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
-    cout << "Comparison algorithm: [stateVector]\nSimulation in progress........\n";
+    cout << "Comparison algorithm: [stateVector]\n" << N << " qubit simulation in progress........\n";
     ifstream in = ifstream(gatePath);
     int spaceSize = (int)pow(2,N);
     
@@ -173,7 +173,6 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
             cout << binString(i, N) << ": " << amps[i] << "\n";
         }
     }
-    cout << "Finished computation on " << N << " qubits\n";
     cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << "> = " << amps[endState] << "\n";
     
     if (showRuntime){ //Print time usage
