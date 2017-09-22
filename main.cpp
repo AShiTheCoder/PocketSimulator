@@ -23,35 +23,38 @@
 using namespace std;
 
 //----------------------------------CONTROL PANEL--------------------------------------
-//Input simulation parameters
-int N = 5;
-int startState = rand()%(int)pow(2,N), endState = rand()%(int)pow(2,N);
-bool showRuntime = true; //controls whether runtime details are printed on console
-string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
-ifstream in = ifstream(gatePath);
-
-//SIMULATION SETTING VARIABLES
-
-/* Changing the 'circuitSetting' variable allows you to choose between executing+writing different circuits.
+/* SIMULATION SETTING VARIABLES
+ N: number of qubits to simulate
+ startState, endState: states to simulate and compute <endState|C|startState>
+ showRuntime: toggle algorithm time details at end of simulation
+ gatePath: directory path to gate input file
+ 
+ Changing the 'circuitSetting' variable allows you to choose between executing+writing different circuits.
  
  0 = Execute a user-inputted circuit from gates.txt
  
- 1 = write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
+ 1 = write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates.
  
- 2 = write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
+ 2 = write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n toffoli gates.
  
  3 = write and execute a Draper adder circuit (used in SEQCSim)
  
  The algorithmSetting variable controls whether to run the PocketSimulator recursive algorithm (= 0), the classic state vector implementation (= 1), or Aaronson's simulation algorithm (= 2). */
 
-int circuitSetting = 2; //Circuit setting control
+int N = 4;
+int startState = rand()%(int)pow(2,N), endState = rand()%(int)pow(2,N);
+bool showRuntime = true; //controls whether runtime details are printed on console
+string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
+ifstream in = ifstream(gatePath);
+
+int circuitSetting = 1; //Circuit setting control
 int algorithmSetting = 2; //Algorithm setting control
 
-//VARIABLES FOR SETTING 0 ONLY: user-inputted circuit
+//VARIABLE FOR SETTING 0 ONLY: user-inputted circuit
 int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE GATES
-bool cmplx = false; //Change this to true if there are complex-valued gates in the circuit
+//------------------------------------------------------------------------------------------------
 
-//------------------------------------MAIN METHOD----------------------------------------------
+//------------------------------------MAIN METHOD-------------------------------------------------
 
 int main(int argc, const char * argv[]){
     srand((int)time(0)); //Set seed for generating random Toffoli gates
@@ -61,7 +64,7 @@ int main(int argc, const char * argv[]){
         case 0: //Execute user-inputted circuit from gates.txt
         {
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates, cmplx, showRuntime); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates, showRuntime); break;
                 case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
@@ -73,13 +76,12 @@ int main(int argc, const char * argv[]){
             ofstream out (gatePath);
             
             /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of [length] toffoli gates, for a total of [length] + 2n gates. */
-            int length = (int)pow(N,2);
-            string circuit = writeCircuit(length, false, N);
+            string circuit = writeCircuit(N, false, N);
             out << circuit;
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, false, showRuntime); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, showRuntime); break;
                 case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
@@ -92,14 +94,13 @@ int main(int argc, const char * argv[]){
             ofstream out (gatePath);
             
             /* The circuit consists of 2 QFT (Quantum Fourier Transform) layers surrounding [length] random toffoli gates, for a total of [length] + 2n gates. */
-            int length = (int)pow(N,2);
-            string circuit = writeCircuit(length, true, N);
+            string circuit = writeCircuit(N, true, N);
             out << circuit;
             out.close();
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, true, showRuntime); break;
-                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, pow(N,2) + 2*N, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime);
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
@@ -116,7 +117,7 @@ int main(int argc, const char * argv[]){
             startState = a*pow(2, N/2) + b, endState = startState - b + sum;
             
             switch(algorithmSetting){
-                case 0: pathIntegral(gatePath, N, startState, endState, N, true, showRuntime); break;
+                case 0: pathIntegral(gatePath, N, startState, endState, N, showRuntime); break;
                 case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;

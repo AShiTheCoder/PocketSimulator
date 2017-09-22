@@ -143,14 +143,12 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
     in.seekg(ios::beg);
     in >> ctrl >> gate;
     resetCounter(bitReached, N);
-    bool quantRead = false;
     layers[0] = 0;
     while (!in.eof()){ //separate circuit into layers, record layer dividers in layers[], record gate sequences in layerGates[]
         switch (gate){
             case 'h':
             {
                 in >> target;
-                quantRead = true;
                 if (bitReached[target]){
                     layerGates[depth] = gateBuffer;
                     depth++;
@@ -165,14 +163,16 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
             case 't':
             {
                 in >> c1 >> c2 >> target;
-                if (quantRead){
+                if (bitReached[c1] || bitReached[c2] || bitReached[target]){
                     layerGates[depth] = gateBuffer;
                     depth++;
                     layers[depth] = gCount;
                     resetCounter(bitReached, N);
                     gateBuffer = "";
-                    quantRead = false;
                 }
+                bitReached[c1] = true;
+                bitReached[c2] = true;
+                bitReached[target] = true;
                 gateBuffer = gateBuffer + "0 t " + to_string(c1) + " " + to_string(c2) + " " +to_string(target) + " ";
                 break;
             }
@@ -181,18 +181,19 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
                 in >> phasePow;
                 if (ctrl){ // controlled gate case
                     in >> c >> target;
-                    if (quantRead){
+                    if (bitReached[c] || bitReached[target]){
                         layerGates[depth] = gateBuffer;
                         depth++;
                         layers[depth] = gCount;
                         resetCounter(bitReached, N);
                         gateBuffer = "";
-                        quantRead = false;
                     }
+                    bitReached[c] = true;
+                    bitReached[target] = true;
                     gateBuffer = gateBuffer + "1 U " + to_string(phasePow) + " " + to_string(c) + " " +to_string(target) + " ";
                 } else { // non-controlled gate case
                     in >> target;
-                    if (quantRead){
+                    if (bitReached[target]){
                         layerGates[depth] = gateBuffer;
                         depth++;
                         layers[depth] = gCount;
@@ -209,25 +210,26 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
                 in >> phasePow;
                 if (ctrl){ // controlled gate case
                     in >> c >> target;
-                    if (quantRead){
+                    if (bitReached[c] || bitReached[target]){
                         layerGates[depth] = gateBuffer;
                         depth++;
                         layers[depth] = gCount;
                         resetCounter(bitReached, N);
                         gateBuffer = "";
-                        quantRead = false;
                     }
+                    bitReached[c] = true;
+                    bitReached[target] = true;
                     gateBuffer = gateBuffer + "1 u " + to_string(phasePow) + " " + to_string(c) + " " +to_string(target) + " ";
                 } else { // non-controlled gate case
                     in >> target;
-                    if (quantRead){
+                    if (bitReached[target]){
                         layerGates[depth] = gateBuffer;
                         depth++;
                         layers[depth] = gCount;
                         resetCounter(bitReached, N);
                         gateBuffer = "";
-                        quantRead = false;
                     }
+                    bitReached[target] = true;
                     gateBuffer = gateBuffer + "0 u " + to_string(phasePow) + " " +to_string(target) + " ";
                 }
                 break;

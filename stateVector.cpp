@@ -174,8 +174,7 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
         }
     }
     cout << "Finished computation on " << N << " qubits\n";
-    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N)
-    << ">(vector) = " << amps[endState] << "\n";
+    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << "> = " << amps[endState] << "\n";
     
     if (showRuntime){ //Print time usage
         cout.precision(7);
