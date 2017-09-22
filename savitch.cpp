@@ -23,7 +23,6 @@ using namespace std;
 //AARONSON VARIABLES
 bool bitReached[32];
 string layerGates[MAX_LAYERS];
-int layerMarks[MAX_LAYERS];
 int layers[MAX_LAYERS];
 extern ifstream in;
 
@@ -40,8 +39,8 @@ extern ifstream in;
  V2: added zero-term checking
  V3: added out-of-reach path pruning */
 
-double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *layers, bool verbose){ //Recursive subalgorithm for algorithm three
-    double result = 0;
+complex<double> savitchRecur(int N, int beginD, int endD, int startS, int endS, int *layers, bool verbose){ //Recursive subalgorithm for algorithm three
+    complex<double> result = complex<double>(0);
     if (verbose) cout << beginD << "(" << startS << ") to " << endD << "(" << endS << ")\n";
     if (beginD == endD) { //base case
         result = 1;
@@ -51,30 +50,58 @@ double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *laye
         gates << layerGates[beginD];
         
         char gate;
-        int c1, c2, target, endBit;
+        int c1, c2, target, endBit, control, c;
         int qubits = startS;
-        gates >> gate;
+        int phasePow;
+        
+        gates >> control >> gate;
         while (!gates.eof()){ //act on gates inside this layer
             switch (gate){
                 case 'h': //hadamard
                 {
                     gates >> target;
                     endBit = (endS >> (N - target - 1)) & 1;
-                    if ((((startS >> (N - target - 1)) & 1) == 1) && endBit == 1){
+                    if ((((qubits >> (N - target - 1)) & 1) == 1) && endBit == 1){
                         //if the hadamarded bit is 1 in both the start and end states, the end amplitude will be negative
                         result *= -1;
                     }
                     //set the hadamarded bit in the register (qubits) to whatever it equals in the end state
                     qubits = qubits & ~(1 << (N - target - 1));
                     qubits += (endBit << (N - target - 1));
-                    result *= 1/sqrt(2); //hadamard-adjusted amplitude
+                    result /= sqrt(2); //hadamard-adjusted amplitude
                     break;
                 }
                 case 't': //toffoli
                 {
                     gates >> c1 >> c2 >> target;
-                    int add = ((startS >> (N - c1 - 1)) & 1) * ((startS >> (N - c2 - 1)) & 1);
+                    int add = ((qubits >> (N - c1 - 1)) & 1) * ((qubits >> (N - c2 - 1)) & 1);
                     qubits = qubits ^ (add << (N - target - 1)); //update register
+                    break;
+                }
+                case 'U':
+                {
+                    gates >> phasePow;
+                    complex<double> phase = polar(1.0, 1/pow(2, phasePow) * 2 * M_PI);
+                    if (control){ // controlled gate case
+                        gates >> c >> target;
+                        if (((qubits >> (N - c - 1)) & 1) && ((qubits >> (N - target - 1)) & 1)) result *= phase;
+                    } else { // non-controlled gate case
+                        gates >> target;
+                        if ((qubits >> (N - target - 1)) & 1) result *= phase;
+                    }
+                    break;
+                }
+                case 'u':
+                {
+                    gates >> phasePow;
+                    complex<double> phase = polar(1.0, -1/pow(2, phasePow) * 2 * M_PI);
+                    if (control){ // controlled gate case
+                        gates >> c >> target;
+                        if (((qubits >> (N - c - 1)) & 1) && ((qubits >> (N - target - 1)) & 1)) result *= phase;
+                    } else { // non-controlled gate case
+                        gates >> target;
+                        if ((qubits >> (N - target - 1)) & 1) result *= phase;
+                    }
                     break;
                 }
                 default:
@@ -83,7 +110,7 @@ double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *laye
                     break;
                 }
             }
-            gates >> gate;
+            gates >> control >> gate;
         }
         // <endS|qubits> == 0 if endS ≠ qubits [|qubits> = Layer|startS>]
         if (qubits != endS) result = 0;
@@ -94,8 +121,8 @@ double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *laye
         for (int i = 0; i < pow(2, N); i++){
             if (bitDiff(startS, i) <= (layers[(beginD + endD)/2 + 1] - layers[beginD]) &&
                 bitDiff(i, endS) <= (layers[endD + 1] - layers[(beginD + endD)/2 + 1])){
-                double termOne = savitchRecur(N, beginD, (beginD + endD)/2, startS, i, layers, verbose);
-                if (termOne != 0){ //only compute second term if first is nonzero
+                complex<double> termOne = savitchRecur(N, beginD, (beginD + endD)/2, startS, i, layers, verbose);
+                if (termOne != complex<double>(0)){ //only compute second term if first is nonzero
                     result += (termOne * savitchRecur(N, (beginD + endD)/2 + 1, endD, i, endS, layers, verbose));
                 }
             }
@@ -105,22 +132,25 @@ double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *laye
 }
 
 void savitch(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
-    cout << "Comparison algorithm: [Aaronson's Savitch]\nSimulation in progress........\n\n\n";
+    cout << "Comparison algorithm: [Aaronson's Savitch]\nSimulation in progress........\n";
     char gate;
-    int c1, c2, target, depth = 0, gCount = 0, ctrl;
+    int c1, c2, target, depth = 0, gCount = 0, ctrl, c;
     string gateBuffer = "";
+    int phasePow;
     
     in = ifstream(gatePath);
     in.clear();
     in.seekg(ios::beg);
     in >> ctrl >> gate;
     resetCounter(bitReached, N);
+    bool quantRead = false;
     layers[0] = 0;
     while (!in.eof()){ //separate circuit into layers, record layer dividers in layers[], record gate sequences in layerGates[]
         switch (gate){
             case 'h':
             {
                 in >> target;
+                quantRead = true;
                 if (bitReached[target]){
                     layerGates[depth] = gateBuffer;
                     depth++;
@@ -129,23 +159,77 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
                     gateBuffer = "";
                 }
                 bitReached[target] = true;
-                gateBuffer = gateBuffer + "h " + to_string(target) + " ";
+                gateBuffer = gateBuffer + "0 h " + to_string(target) + " ";
                 break;
             }
             case 't':
             {
                 in >> c1 >> c2 >> target;
-                if (bitReached[c1] || bitReached[c2] || bitReached[target]){
+                if (quantRead){
                     layerGates[depth] = gateBuffer;
                     depth++;
                     layers[depth] = gCount;
                     resetCounter(bitReached, N);
                     gateBuffer = "";
+                    quantRead = false;
                 }
-                bitReached[c1] = true;
-                bitReached[c2] = true;
-                bitReached[target] = true;
-                gateBuffer = gateBuffer + "t " + to_string(c1) + " " + to_string(c2) + " " +to_string(target) + " ";
+                gateBuffer = gateBuffer + "0 t " + to_string(c1) + " " + to_string(c2) + " " +to_string(target) + " ";
+                break;
+            }
+            case 'U':
+            {
+                in >> phasePow;
+                if (ctrl){ // controlled gate case
+                    in >> c >> target;
+                    if (quantRead){
+                        layerGates[depth] = gateBuffer;
+                        depth++;
+                        layers[depth] = gCount;
+                        resetCounter(bitReached, N);
+                        gateBuffer = "";
+                        quantRead = false;
+                    }
+                    gateBuffer = gateBuffer + "1 U " + to_string(phasePow) + " " + to_string(c) + " " +to_string(target) + " ";
+                } else { // non-controlled gate case
+                    in >> target;
+                    if (quantRead){
+                        layerGates[depth] = gateBuffer;
+                        depth++;
+                        layers[depth] = gCount;
+                        resetCounter(bitReached, N);
+                        gateBuffer = "";
+                    }
+                    bitReached[target] = true;
+                    gateBuffer = gateBuffer + "0 U " + to_string(phasePow) + " " +to_string(target) + " ";
+                }
+                break;
+            }
+            case 'u':
+            {
+                in >> phasePow;
+                if (ctrl){ // controlled gate case
+                    in >> c >> target;
+                    if (quantRead){
+                        layerGates[depth] = gateBuffer;
+                        depth++;
+                        layers[depth] = gCount;
+                        resetCounter(bitReached, N);
+                        gateBuffer = "";
+                        quantRead = false;
+                    }
+                    gateBuffer = gateBuffer + "1 u " + to_string(phasePow) + " " + to_string(c) + " " +to_string(target) + " ";
+                } else { // non-controlled gate case
+                    in >> target;
+                    if (quantRead){
+                        layerGates[depth] = gateBuffer;
+                        depth++;
+                        layers[depth] = gCount;
+                        resetCounter(bitReached, N);
+                        gateBuffer = "";
+                        quantRead = false;
+                    }
+                    gateBuffer = gateBuffer + "0 u " + to_string(phasePow) + " " +to_string(target) + " ";
+                }
                 break;
             }
             default:
@@ -162,7 +246,7 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
     layers[depth] = gCount;
     cout << "Divided into " << depth << " layers\n";
     
-    double result = savitchRecur(N, 0, depth - 1, startState, endState, layers, verbose); //call recursive algorithm
+    complex<double> result = savitchRecur(N, 0, depth - 1, startState, endState, layers, verbose); //call recursive algorithm
     cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << ">: " << result << "\n";
     
     if (showRuntime){ //Print time usage
@@ -175,4 +259,5 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
         //        cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
         //Memory usage details removed due to unclear units
     }
+    cout << "\n";
 }

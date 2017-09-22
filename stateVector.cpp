@@ -20,7 +20,7 @@
 using namespace std;
 //STATE VECTOR VARIABLES
 #define MAX_LAYERS 1000
-double amps[INT_MAX]; //used for amplitude storage
+complex<double> amps[INT_MAX/2048]; //used for amplitude storage
 
 //---------------------------------STATE VECTOR EVOLUTION----------------------------------
 
@@ -38,7 +38,7 @@ double amps[INT_MAX]; //used for amplitude storage
  (because of very large state spaces yielding massive console outputs, verbose was adjusted from the previous definition.) */
 
 void stateVector(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime){
-    cout << "Comparison algorithm: [stateVector]\nSimulation in progress........\n\n\n";
+    cout << "Comparison algorithm: [stateVector]\nSimulation in progress........\n";
     ifstream in = ifstream(gatePath);
     int spaceSize = (int)pow(2,N);
     
@@ -50,16 +50,23 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
     in.seekg(0, ios::beg); //go to beginning of file
     
     char gate;
-    int c1, c2, target, ctrl;
-    in >> ctrl >> gate;
+    int control, c1, c2, target, ctrl;
+    int index, toff;
+    int Hplus, H, zeroI, oneI;
+    double temp;
+    complex<double> ctemp;
+    complex<double> phase;
+    int phasePow;
+    
+    in >> control >> gate;
     while (!in.eof()){
         switch (gate) {
             case 'h': //hadamard gate
             {
                 if (verbose) cout << "hadamard detected\n";
                 in >> target;
-                double zero, one;
-                int Hplus = pow(2, N - target), H = Hplus/2, zeroI, oneI;
+                complex<double> zero, one;
+                Hplus = pow(2, N - target), H = Hplus/2;
                 
                 //iterate over state vectors where target qubit == 0, updating both vectors (where the target = 0 and = 1) together
                 for (int i = 0; i < spaceSize; i += Hplus){
@@ -77,8 +84,6 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
             case 't':
             {
                 if (verbose) cout << "toffoli detected\n";
-                double temp;
-                int index, toff;
                 in >> c1 >> c2 >> target;
                 if (c1 > c2){
                     temp = c1;
@@ -94,11 +99,63 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
                             index = k + C1 + j + C2 + i; //index where c1, c2 == 1
                             if (((index >> (N - target - 1)) & 1) == 0){
                                 toff = index ^ (1 << (N - target - 1));
-                                temp = amps[toff];
+                                ctemp = amps[toff];
                                 amps[toff] = amps[index];
-                                amps[index] = temp;
+                                amps[index] = ctemp;
                             }
                         }
+                    }
+                }
+                break;
+            }
+            case 'U':
+            {
+                in >> phasePow;
+                phase = polar(1.0, 1/pow(2, phasePow) * 2 * M_PI);
+                if (control){ // controlled gate case
+                    in >> ctrl >> target;
+                    if (target > ctrl){
+                        temp = ctrl;
+                        ctrl = target;
+                        target = temp;
+                    }
+                    int inci = pow(2, N - target), incj = pow(2, N - ctrl), C = inci/2, targBit = incj/2;
+                    for (int i = 0; i < spaceSize; i += inci){
+                        for (int j = 0; j < C; j += incj){
+                            for (int k = 0; k < targBit; k++) amps[i + C + j + targBit + k] *= phase;
+                        }
+                    }
+                } else { // non-controlled gate case
+                    in >> target;
+                    int inc = pow(2, N - target), targBit = inc/2;
+                    for (int i = 0; i < spaceSize; i += inc){
+                        for (int j = 0; j < targBit; j++) amps[i + targBit + j] *= phase;
+                    }
+                }
+                break;
+            }
+            case 'u':
+            {
+                in >> phasePow;
+                phase = polar(1.0, -1/pow(2, phasePow) * 2 * M_PI);
+                if (control){ // controlled gate case
+                    in >> ctrl >> target;
+                    if (target > ctrl){
+                        temp = ctrl;
+                        ctrl = target;
+                        target = temp;
+                    }
+                    int inci = pow(2, N - target), incj = pow(2, N - ctrl), C = inci/2, targBit = incj/2;
+                    for (int i = 0; i < spaceSize; i += inci){
+                        for (int j = 0; j < C; j += incj){
+                            for (int k = 0; k < targBit; k++) amps[i + C + j + targBit + k] *= phase;
+                        }
+                    }
+                } else { // non-controlled gate case
+                    in >> target;
+                    int inc = pow(2, N - target), targBit = inc/2;
+                    for (int i = 0; i < spaceSize; i += inc){
+                        for (int j = 0; j < targBit; j++) amps[i + targBit + j] *= phase;
                     }
                 }
                 break;
@@ -109,7 +166,7 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
                 break;
             }
         }
-        in >> ctrl >> gate;
+        in >> control >> gate;
     }
     if (verbose){
         for (int i = 0; i < spaceSize; i++){
@@ -130,4 +187,5 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
         //        cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
         //Memory usage details removed due to unclear units
     }
+    cout << "\n";
 }

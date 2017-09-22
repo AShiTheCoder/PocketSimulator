@@ -176,7 +176,7 @@ void complexPathStep(streampos pos, int changesLeft, complex<double> currPhase, 
 }
 
 void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, bool cmplx, bool showRuntime){
-    cout << "Main Method: [PocketSimulator]\nSimulation in progress........\n\n\n";
+    cout << "Main Method: [PocketSimulator]\nSimulation in progress........\n";
     currState = startS, startState = startS, endState = endS;
     N = n;
     in = ifstream(gatePath);
@@ -200,4 +200,5 @@ void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, 
         //        cout << "Memory usage: " << usage.ru_maxrss / (double) memConst << " qunits [1 qunit ≈ 1 mb]\n\n";
         //Memory usage details removed due to unclear units
     }
+    cout << "\n";
 }

@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-double savitchRecur(int N, int beginD, int endD, int startS, int endS, int *layers, bool verbose); //Recursive subalgorithm for algorithm three
+complex<double> savitchRecur(int N, int beginD, int endD, int startS, int endS, int *layers, bool verbose); //Recursive subalgorithm for algorithm three
 
 void savitch(string gatePath, int N, int startState, int endState, bool verbose, bool showRuntime);
 

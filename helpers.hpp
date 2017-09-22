@@ -21,7 +21,7 @@ string randToff(int *indices, int N); //generates a random Toffoli gate in indic
 
 /* writeCircuit: writes layered/dispersed circuits for n qubits as a string (with Hadamard + Toffoli).
  All Toffoli gates are randomly generated. */
-string writeCircuit(int length, bool layered, int N);
+string writeCircuit(int length, bool QFT, int N);
 
 string writeQFT(int N); //writes a QFT circuit on n qubits
 

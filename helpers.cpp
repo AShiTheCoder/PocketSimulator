@@ -63,21 +63,20 @@ string randToff(int *indices, int N){ //generates a random Toffoli gate in indic
 
 /* writeCircuit: writes layered/dispersed circuits for n qubits as a string (with Hadamard + Toffoli).
  All Toffoli gates are randomly generated. */
-string writeCircuit(int length, bool layered, int N){
+string writeCircuit(int length, bool QFT, int N){
     string out = "";
     int toff[3];
-    if (!layered){
-        for (int i = 0; i < length; i++){
-            if (i % (length/N) == 0) out = out + "0 h " + to_string(i / (length/N)) + "\n";
-            out = out + randToff(toff, N) + "\n";
-        }
-    } else {
+    if (QFT) out += writeQFT(N);
+    else {
         for (int i = 0; i < N; i++){
             out = out + "0 h " + to_string(i) + "\n";
         }
-        for (int i = 0; i < length; i++){
-            out = out + randToff(toff, N) + "\n";
-        }
+    }
+    for (int i = 0; i < length; i++){
+        out = out + randToff(toff, N) + "\n";
+    }
+    if (QFT) out += writeQFT(N);
+    else {
         for (int i = 0; i < N; i++){
             out = out + "0 h " + to_string(i) + "\n";
         }
