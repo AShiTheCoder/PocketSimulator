@@ -35,20 +35,22 @@ using namespace std;
  
  1 = write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates.
  
- 2 = write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n toffoli gates.
+ 2 = write and execute a QFT layered circuit, consisting of two QFT circuits surrounding a randomly generated collection of n toffoli gates.
  
- 3 = write and execute a Draper adder circuit (used in SEQCSim)
+ 3 = write and execute a QFT circuit.
+ 
+ 4 = write and execute a Draper adder circuit (used in SEQCSim)
  
  The algorithmSetting variable controls whether to run the PocketSimulator recursive algorithm (= 0), the classic state vector implementation (= 1), or Aaronson's simulation algorithm (= 2). */
 
-int N = 4;
+int N = 20;
 int startState = rand()%(int)pow(2,N), endState = rand()%(int)pow(2,N);
 bool showRuntime = true; //controls whether runtime details are printed on console
 string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
 ifstream in = ifstream(gatePath);
 
-int circuitSetting = 1; //Circuit setting control
-int algorithmSetting = 0; //Algorithm setting control
+int circuitSetting = 2; //Circuit setting control
+int algorithmSetting = 2; //Algorithm setting control
 
 //VARIABLE FOR SETTING 0 ONLY: user-inputted circuit
 int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE GATES
@@ -75,7 +77,7 @@ int main(int argc, const char * argv[]){
         {
             ofstream out (gatePath);
             
-            /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of [length] toffoli gates, for a total of [length] + 2n gates. */
+            /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates, for a total of 3n gates. */
             string circuit = writeCircuit(N, false, N);
             out << circuit;
             out.close();
@@ -93,7 +95,7 @@ int main(int argc, const char * argv[]){
         {
             ofstream out (gatePath);
             
-            /* The circuit consists of 2 QFT (Quantum Fourier Transform) layers surrounding [length] random toffoli gates, for a total of [length] + 2n gates. */
+            /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates, for a total of 3n gates. */
             string circuit = writeCircuit(N, true, N);
             out << circuit;
             out.close();
@@ -104,9 +106,27 @@ int main(int argc, const char * argv[]){
                 case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
                 default: break;
             }
+            
             break;
         }
-        case 3: //Write and execute draper adder
+        case 3: //Write and execute QFT circuit
+        {
+            ofstream out (gatePath);
+            
+            /* The circuit consists of a QFT (Quantum Fourier Transform) circuit with N branching gates. */
+            string circuit = writeQFT(N);
+            out << circuit;
+            out.close();
+            
+            switch(algorithmSetting){
+                case 0: pathIntegral(gatePath, N, startState, endState, N, showRuntime); break;
+                case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+                case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
+                default: break;
+            }
+            break;
+        }
+        case 4: //Write and execute draper adder
         {
             ofstream out (gatePath);
             string circuit = writeAdder(N);

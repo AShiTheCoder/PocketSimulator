@@ -118,9 +118,7 @@ string writeAdder(int N){ //Writes a draper adder circuit
 }
 
 int bitDiff(int a, int b){
-    int x = a ^ b;
-    bitset<sizeof(int) * CHAR_BIT> y(x);
-    return (int)y.count();
+    return __builtin_popcount(a ^ b);
 }
 
 void resetCounter(bool *reached, int n){
