@@ -112,6 +112,21 @@ void complexPathStep(streampos pos, int changesLeft, complex<double> currPhase, 
                 }
                 break;
             }
+            case 's': //Swap gate
+            {
+                changesLeft -= 2;
+                in >> c1 >> c2;
+                currPos = in.tellg();
+                int bitOne = (currState >> (N - c1 - 1)) & 1, bitTwo = (currState >> (N - c2 - 1)) & 1;
+                c = bitOne ^ bitTwo;
+                c = (c << (N-c1-1)) | (c << (N-c2-1));
+                if (bitDiff(currState, endState) <= (changesLeft + 2)){ //is the end state reachable?
+                    currState ^= c; //Swap state
+                    complexPathStep(currPos, changesLeft, currPhase, currDepth); //Step forwards and compute
+                    currState ^= c; //Swap state again
+                } else amplitudes[currDepth] = 0;
+                return;
+            }
             default: break;
         }
         in >> control >> gate;

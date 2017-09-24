@@ -137,6 +137,9 @@ string writeQFT(int N){ //writes a QFT circuit on n qubits
             out = out+"1 U "+to_string(j)+" "+to_string(i + j - 1)+" "+to_string(i)+"\n";
         }
     }
+    for (int i = 0; i < N/2; i++){
+        out = out + "0 s " + to_string(i) + " " + to_string(N - i - 1) + "\n";
+    }
     return out;
 }
 

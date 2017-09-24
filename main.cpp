@@ -45,17 +45,18 @@ using namespace std;
  
  The algorithmSetting variable controls whether to run the PocketSimulator recursive algorithm (= 0), the classic state vector implementation (= 1), or Aaronson's simulation algorithm (= 2). */
 
-int N = 10;
+int N = 17;
 int startState = rand()%(int)pow(2,N), endState = rand()%(int)pow(2,N);
 bool showRuntime = true; //controls whether runtime details are printed on console
 string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
 ifstream in = ifstream(gatePath);
 
-int circuitSetting = 3; //Circuit setting control
+int circuitSetting = 4; //Circuit setting control
 int algorithmSetting = 0; //Algorithm setting control
 
 //VARIABLE FOR SETTING 0 ONLY: user-inputted circuit
-int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE GATES
+int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE AND SWAP GATES
+int swapGates = 0; //Number of swap gates in circuit
 //------------------------------------------------------------------------------------------------
 
 //------------------------------------MAIN METHOD-------------------------------------------------
@@ -75,6 +76,7 @@ int main(int argc, const char * argv[]){
         {
             /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates, for a total of 3n gates. */
             nonPhaseGates = 3*N;
+            swapGates = 0;
             circuit = writeCircuit(N, false, N);
             out << circuit;
             out.close();
@@ -83,8 +85,9 @@ int main(int argc, const char * argv[]){
         }
         case 2: //Write and execute layered-QFT circuit
         {
-            /* The circuit consists of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates, for a total of 3n gates. */
+            /* The circuit consists of two QFT circuits surrounding a randomly generated collection of n toffoli gates, for a total of 3n gates. */
             nonPhaseGates = 3*N;
+            swapGates = (int)(N/2) * 2;
             circuit = writeCircuit(N, true, N);
             out << circuit;
             out.close();
@@ -93,7 +96,9 @@ int main(int argc, const char * argv[]){
         }
         case 3: //Write and execute an "HSP standard method" circuit
         {
-            nonPhaseGates = 2*N;
+            nonPhaseGates = N + (int)(N/2)*2;
+            swapGates = N/4;
+            startState = 0, endState = rand()%(int)pow(2,N);
             circuit = paradigmCircuit(N/2, N);
             out << circuit;
             out.close();
@@ -104,6 +109,7 @@ int main(int argc, const char * argv[]){
         {
             /* The circuit consists of a QFT (Quantum Fourier Transform) circuit with N branching gates. */
             nonPhaseGates = N;
+            swapGates = N/2;
             circuit = writeQFT(N);
             out << circuit;
             out.close();
@@ -113,6 +119,7 @@ int main(int argc, const char * argv[]){
         case 5: //Write and execute draper adder
         {
             nonPhaseGates = N;
+            swapGates = 0;
             circuit = writeAdder(N);
             out << circuit;
             out.close();
@@ -128,8 +135,7 @@ int main(int argc, const char * argv[]){
     }
     
     switch(algorithmSetting){
-        case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates, showRuntime); break;
-        case 1: stateVector(gatePath, N, startState, endState, false, showRuntime); break;
+        case 0: pathIntegral(gatePath, N, startState, endState, nonPhaseGates + 2*swapGates, showRuntime); stateVector(gatePath, N, startState, endState, false, showRuntime); break;
         case 2: savitch(gatePath, N, startState, endState, false, showRuntime); break;
         default: break;
     }

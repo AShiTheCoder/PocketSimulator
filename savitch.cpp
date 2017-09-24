@@ -104,6 +104,15 @@ complex<double> savitchRecur(int N, int beginD, int endD, int startS, int endS, 
                     }
                     break;
                 }
+                case 's': //swap
+                {
+                    gates >> c1 >> c2;
+                    int bitOne = (qubits >> (N - c1 - 1)) & 1, bitTwo = (qubits >> (N - c2 - 1)) & 1;
+                    c = bitOne ^ bitTwo;
+                    c = (c << (N-c1-1)) | (c << (N-c2-1));
+                    qubits ^= c;
+                    break;
+                }
                 default:
                 {
                     cout << "Incompatible gate type: " << gate << "\n";

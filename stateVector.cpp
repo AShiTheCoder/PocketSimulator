@@ -68,7 +68,7 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
                 complex<double> zero, one;
                 Hplus = pow(2, N - target), H = Hplus/2;
                 
-                //iterate over state vectors where target qubit == 0, updating both vectors (where the target = 0 and = 1) together
+                //iterate over states where target qubit == 0, updating both states (where the target = 0 and = 1) together
                 for (int i = 0; i < spaceSize; i += Hplus){
                     for (int j = 0; j < H; j++){
                         zeroI = i + j;
@@ -91,7 +91,7 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
                     c2 = temp;
                 }
                 
-                /* Iterate over state vectors where both control qubits are 1. The previous approach looped over all states, but this one saves time by factor of 4 by only iterating over those where toffoli actually does something. */
+                /* Iterate over states where both control qubits are 1. The previous approach looped over all states, but this one saves time by factor of 4 by only iterating over those where toffoli actually does something. */
                 int inci = pow(2, N - c1), incj = pow(2, N - c2), C1 = inci/2, C2 = incj/2;
                 for (int i = 0; i < spaceSize; i += inci){ //increments qubits before c1
                     for (int j = 0; j < C1; j += incj){ //increments qubits between c1 and c2
@@ -156,6 +156,28 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
                     int inc = pow(2, N - target), targBit = inc/2;
                     for (int i = 0; i < spaceSize; i += inc){
                         for (int j = 0; j < targBit; j++) amps[i + targBit + j] *= phase;
+                    }
+                }
+                break;
+            }
+            case 's':
+            {
+                in >> c1 >> c2;
+                if (c1 > c2){
+                    temp = c1;
+                    c1 = c2;
+                    c2 = temp;
+                }
+                int inci = pow(2, N - c1), incj = pow(2, N - c2), C1 = inci/2, C2 = incj/2;
+                for (int i = 0; i < spaceSize; i += inci){ //increments qubits before c1
+                    for (int j = 0; j < C1; j += incj){ //increments qubits between c1 and c2
+                        for (int k = 0; k < C2; k++){ //increments qubits after c2
+                            int a = k + j + C2 + i; //index where c1 == 0, c2 == 1
+                            int b = k + C1 + j + i; //index where c1 == 1, c2 == 0
+                            ctemp = amps[a];
+                            amps[a] = amps[b];
+                            amps[b] = ctemp;
+                        }
                     }
                 }
                 break;
