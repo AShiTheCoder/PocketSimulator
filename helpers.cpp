@@ -58,29 +58,74 @@ string randToff(int *indices, int N){ //generates a random Toffoli gate in indic
             i++;
         }
     }
+    result += "\n";
     return result;
 }
+
+/* randControlToff: generate a random Toffoli with control bits in the first a bits and target bit in the rest of the N-bit register (N-a choices) */
+string randControlToff(int *indices, int a, int N){
+    string out = "";
+    if (N < 3 || a < 2) {
+        cout << "not enough qubits\n";
+        return "fail";
+    }
+    
+    int i = 0, temp;
+    string result = "0 t";
+    bool success;
+    while (i < 2){
+        success = true;
+        temp = rand() % a;
+        for (int j = 0; j < i; j++){
+            if (indices[j] == temp) success = false;
+        }
+        if (success){
+            result = result + " " + to_string(temp);
+            indices[i] = temp;
+            i++;
+        }
+    }
+    result = result + " " + to_string((rand()%(N-a)) + a) + "\n";
+    return result;
+}
+
+/* paradigmCircuit: writes a "HSP standard method" circuit for N qubits, using the first a qubits as the control register (the one we will eventually measure) writing N random toffoli gates.
+ 
+ HSP Standard Method:
+ 1) Put a-bit register into superposition with Hadamards
+ 2) Compute the function f(a --> b), storing the result in a b-bit register (a + b = N)
+    (in this case, our function is a collection of random toffoli gates.
+ 3) Perform the appropriate actions on the a-bit register to solve the problem (in this case, we use the QFT that Shor's algorithm uses).
+ 
+ All Toffoli gates are randomly generated within the control restrictions. */
+string paradigmCircuit(int a, int N){
+    string out = "";
+    int toff[3];
+
+    out += writeHlayer(a);
+    for (int i = 0; i < N; i++) out += randControlToff(toff, a, N);
+    out += writeQFT(a);
+    return out;
+}
+
 
 /* writeCircuit: writes layered/dispersed circuits for n qubits as a string (with Hadamard + Toffoli).
  All Toffoli gates are randomly generated. */
 string writeCircuit(int length, bool QFT, int N){
     string out = "";
     int toff[3];
+    
     if (QFT) out += writeQFT(N);
-    else {
-        for (int i = 0; i < N; i++){
-            out = out + "0 h " + to_string(i) + "\n";
-        }
-    }
-    for (int i = 0; i < length; i++){
-        out = out + randToff(toff, N) + "\n";
-    }
+    else out += writeHlayer(N);
+    for (int i = 0; i < length; i++) out += randToff(toff, N);
     if (QFT) out += writeQFT(N);
-    else {
-        for (int i = 0; i < N; i++){
-            out = out + "0 h " + to_string(i) + "\n";
-        }
-    }
+    else out += writeHlayer(N);
+    return out;
+}
+
+string writeHlayer(int N){ //writes a layer of Hadamards on N qubits
+    string out = "";
+    for (int i = 0; i < N; i++) out += "0 h " + to_string(i) + "\n";
     return out;
 }
 
