@@ -15,7 +15,8 @@ Value | Effect
 0 | Execute a user-inputted circuit from gates.txt
 1 | Write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
 2 | Write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
-3 | Write and execute a Draper adder circuit.
+3 | Write and execute a QFT circuit.
+4 | Write and execute a Draper adder circuit.
 
 ```algorithmSetting``` details:
 
