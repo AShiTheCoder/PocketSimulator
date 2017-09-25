@@ -94,7 +94,7 @@ string randControlToff(int *indices, int a, int N){
  HSP Standard Method:
  1) Put a-bit register into superposition with Hadamards
  2) Compute the function f(a --> b), storing the result in a b-bit register (a + b = N)
-    (in this case, our function is a collection of random toffoli gates.
+    (in this case, our function is a collection of n random toffoli gates).
  3) Perform the appropriate actions on the a-bit register to solve the problem (in this case, we use the QFT that Shor's algorithm uses).
  
  All Toffoli gates are randomly generated within the control restrictions. */

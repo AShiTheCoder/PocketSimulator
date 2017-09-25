@@ -45,14 +45,14 @@ using namespace std;
  
  The algorithmSetting variable controls whether to run the PocketSimulator recursive algorithm (= 0), the classic state vector implementation (= 1), or Aaronson's simulation algorithm (= 2). */
 
-int N = 10;
+int N = 18;
 int startState = rand()%(int)pow(2,N), endState = rand()%(int)pow(2,N);
 bool showRuntime = true; //controls whether runtime details are printed on console
 string gatePath = "/Users/AShi/Documents/Repos/PocketSimulator/PocketSimulator/gates.txt"; //Directory path to gate file
 ifstream in = ifstream(gatePath);
 
 int circuitSetting = 3; //Circuit setting control
-int algorithmSetting = 0; //Algorithm setting control
+int algorithmSetting = 2; //Algorithm setting control
 
 //VARIABLE FOR SETTING 0 ONLY: user-inputted circuit
 int nonPhaseGates = 0; //Number of gates in circuit EXCLUDING PHASE GATES
@@ -93,8 +93,9 @@ int main(int argc, const char * argv[]){
         }
         case 3: //Write and execute an "HSP standard method" circuit
         {
-            nonPhaseGates = 2*N;
-            circuit = paradigmCircuit(N/2, N);
+            nonPhaseGates = (int)(2*N/3)*2 + N;
+            startState = 0;
+            circuit = paradigmCircuit(2*N/3, N);
             out << circuit;
             out.close();
             cout << "Circuit type: [HSP standard method]\n";
