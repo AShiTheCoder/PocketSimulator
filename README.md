@@ -13,10 +13,11 @@ PocketSimulator comes pre-loaded with features for writing and testing certain t
 Value | Effect
 ---|---
 0 | Execute a user-inputted circuit from gates.txt
-1 | Write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
-2 | Write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n^2 toffoli gates, for a total of n^2 + 2n gates.
-3 | Write and execute a QFT circuit.
-4 | Write and execute a Draper adder circuit.
+1 | Write and execute a Hadamard-Toffoli layered circuit, consisting of two n-Hadamard layers surrounding a randomly generated collection of n toffoli gates.
+2 | Write and execute a QFT-layered circuit, consisting of two quantum Fourier transforms surrounding a randomly generated collection of n toffoli gates.
+3 | Write and execute a HSP standard method circuit. The circuit has two registers, a and b, of size 2n/3 and n/3 respectively; it consists of a Hadamard transform on register a, n random Toffoli gates controlled by a onto b, and a quantum Fourier transform on a.
+4 | Write and execute a QFT circuit.
+5 | Write and execute a Draper adder circuit.
 
 ```algorithmSetting``` details:
 
@@ -54,7 +55,7 @@ u (-1/(2^a) phase) | u | phase power a, target qubit (U a \_) | U 4 0 [phase of 
 Gates are inputted in chronological order in ```gates.txt```. A control bit with value of either 0 or 1 must precede each gate inputted; if it equals 1, the gate is modified as a controlled operation and will need to specify an additional argument for the control qubit number.
 
 ### Execution
-Upon execution of algorithm U, PocketSimulator will return a complex probability amplitude <endState|U|startState>, as well as time used (in seconds) by the execution as returned by the system method `getrusage()` ([documentation here](http://pubs.opengroup.org/onlinepubs/009695399/functions/getrusage.html)).
+Upon execution of circuit C, PocketSimulator will return a complex probability amplitude <endState|C|startState>, as well as time used (in seconds) by the execution as returned by the system method `getrusage()` ([documentation here](http://pubs.opengroup.org/onlinepubs/009695399/functions/getrusage.html)).
 
 ## About
 This project was created for the 2017 Siemens Competition.
