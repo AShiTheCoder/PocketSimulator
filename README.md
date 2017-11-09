@@ -58,4 +58,4 @@ Gates are inputted in chronological order in ```gates.txt```. A control bit with
 Upon execution of circuit C, PocketSimulator will return a complex probability amplitude <endState|C|startState>, as well as time used (in seconds) by the execution as returned by the system method `getrusage()` ([documentation here](http://pubs.opengroup.org/onlinepubs/009695399/functions/getrusage.html)).
 
 ## About
-This project is the implementation of a simulation algorithm explained and analyzed in [arXiv:1710.09364](https://arxiv.org/abs/1710.09364).
+This project is the implementation of a simulation algorithm explained and analyzed in [arXiv:1710.09364](https://arxiv.org/abs/1710.09364). It has also been submitted to the 2017 Siemens Competition and 2017 Regeneron STS.
