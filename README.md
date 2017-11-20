@@ -1,4 +1,4 @@
-# PocketSimulator (committed by who? test 3)
+# PocketSimulator
 A space-efficient simulator for arbitrary quantum circuits
 ## About
 Many existing quantum computation simulators operate on the state-vector representation of quantum states, using time and space exponential to the # of qubits involved. In contrast, PocketSimulator approaches simulation with an algorithm reminiscent of Feynman's path integral formulation of quantum mechanics. It successively iterates over every computation path, achieving *linear* space usage in the # of qubits + the # of gates.
