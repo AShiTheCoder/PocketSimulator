@@ -173,7 +173,7 @@ void stateVector(string gatePath, int N, int startState, int endState, bool verb
             cout << binString(i, N) << ": " << amps[i] << "\n";
         }
     }
-    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << "> = " << amps[endState] << "\n";
+    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << "> = " << amps[endState].real() << " + " << amps[endState].imag() << "i\n";
     
     if (showRuntime){ //Print time usage
         cout.precision(7);

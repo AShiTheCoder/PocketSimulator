@@ -249,7 +249,7 @@ void savitch(string gatePath, int N, int startState, int endState, bool verbose,
     cout << "Divided into " << depth << " layers\n";
     
     complex<double> result = savitchRecur(N, 0, depth - 1, startState, endState, layers, verbose); //call recursive algorithm
-    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << ">: " << result << "\n";
+    cout << "<" << binString(endState, N) << "|Circuit|" << binString(startState, N) << ">: " << result.real() << " + " << result.imag() << "i\n";
     
     if (showRuntime){ //Print time usage
         cout.precision(7);

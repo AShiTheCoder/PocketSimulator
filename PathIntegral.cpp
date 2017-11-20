@@ -131,7 +131,7 @@ void pathIntegral(string gatePath, int n, int startS, int endS, int numChanges, 
     //initial recursive call (the "root" of the path tree)
     
     complexPathStep(ios::beg, numChanges, 1, 0);
-    cout << "<" << binString(endS, N) << "|Circuit|" << binString(startS, N) << "> = " << amplitudes[0] << "\n";
+    cout << "<" << binString(endS, N) << "|Circuit|" << binString(startS, N) << "> = " << amplitudes[0].real() << " + " << amplitudes[0].imag() << "i\n";
     
     if (showRuntime){ //Print time usage
         cout.precision(7);
